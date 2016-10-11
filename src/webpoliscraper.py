@@ -12,7 +12,7 @@ def datetime2ical(date, time=0):
     d.hour, d.minute = [int(i) for i in time.split(":")]
     return d.strftime("TZID=Europe-Rome:%Y%m%dT%H%M00")
 
-teacher_re = re.compile(r"<b>\s*(?P<id>\d+)\s+-\s+(?P<name>[\w\s]+)\s*</b>\s*[(]\s*<b>\s*(?:Docente)|(?:Professor)\s*:\s*</b>\s*(?P<teacher>[\w ]+)\s*[)]", flags=re.M|re.I|re.U)
+teacher_re = re.compile(r"<b>\s*(?P<id>\d+)\s+-\s+(?P<name>[\w\s\\'.,;]+)\s*</b>(?:\s*[(]\s*<b>\s*(?:Docente)|(?:Professor)\s*:\s*</b>\s*(?P<teacher>[\w ]+)\s*[)])?", flags=re.M|re.I|re.U)
 ltime_re = re.compile(r"(?P<day>[\wàèéìòù]+)\s+dalle\s+(?P<start>\d+:\d+)\s+alle\s+(?P<end>\d+:\d+),\s+(?P<lesson>\w+)", flags=re.M|re.I|re.U)
 lang_re = re.compile(r'var\s+jaf_js_LANG\s+=\s+[\'"](\w+)[\'"]\s*;', flags=re.U)
 roomurl_re = re.compile(r"id_?aula=(\d+)", flags=re.U)
@@ -86,7 +86,7 @@ def parse_timetable(html, print_divs=False, print_html=False, print_regex=False)
 
         course = {"id": match.group("id"),
                   "name": match.group("name"),
-                  "teacher": match.group("teacher"),
+                  "teacher": match.group("teacher") and match.group("teacher") or "Unknown/Multiple",
                   "url": ceda_course_url.format(id=match.group("id"), lang=lang)}
         # print (course)
         n = div.next_sibling
